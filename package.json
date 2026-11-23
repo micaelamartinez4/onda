@@ -1,0 +1,12 @@
+{
+  "name": "onda",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ONDA: carrera tipo Flappy Bird controlada por la voz (grave baja, agudo sube), de 1 a 4 jugadores, con Socket.IO y p5.js.",
+  "scripts": {
+    "start": "node servidor.js"
+  },
+  "dependencies": {
+    "socket.io": "4.8.3"
+  }
+}

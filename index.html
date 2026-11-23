@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voz Flappy</title>
+<!-- Inter (la tipografía de los diseños). Sin internet se usa la del sistema. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <!-- Íconos reutilizables -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-mic" viewBox="0 0 62 62">
+      <rect x="18" y="2" width="14" height="30" rx="7" fill="currentColor"/>
+      <path d="M10 24v3a15 15 0 0 0 15 15M25 42v13M17 56h16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="47" cy="47" r="6.5" fill="none" stroke="currentColor" stroke-width="4"/>
+      <circle cx="47" cy="47" r="10.5" fill="none" stroke="currentColor" stroke-width="5" stroke-dasharray="3.3 3.3"/>
+    </symbol>
+    <symbol id="i-flecha" viewBox="0 0 24 24">
+      <path d="M3 12h17M13 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-cerrar" viewBox="0 0 24 24">
+      <path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+    </symbol>
+  </svg>
+
+  <h1 class="sr-only">Voz Flappy</h1>
+  <p id="aviso-libs" role="alert" hidden></p>
+
+  <!-- 1. Inicio: apodo y sala -->
+  <section id="entrada" class="pantalla">
+    <div class="deco barra-rosa"></div>
+    <div class="deco barra-lima"></div>
+    <div class="deco barra-violeta"></div>
+    <div class="deco barra-roja"></div>
+    <div class="deco banda"></div>
+
+    <form id="datos-entrada" class="formulario">
+      <h2>Entrar a jugar</h2>
+      <label for="apodo">Apodo</label>
+      <input id="apodo" maxlength="16" autocomplete="off">
+      <label for="sala">Sala (hasta 4 jugadores)</label>
+      <input id="sala" maxlength="12" autocomplete="off">
+      <p id="aviso" role="alert"></p>
+    </form>
+    <button type="submit" form="datos-entrada" class="entrar">ENTRAR</button>
+    <a class="btn-presentacion" href="presentacion/onda.html" target="_blank" rel="noopener noreferrer">
+      <span class="txt">VER PRESENTACIÓN</span>
+      <span class="flecha"><svg aria-hidden="true"><use href="#i-flecha"/></svg></span>
+    </a>
+  </section>
+
+  <!-- 2. Sala de espera -->
+  <section id="espera" class="pantalla" hidden>
+    <header class="sala-cab">
+      <div>
+        <h2 class="sala-titulo">SALA: <span id="nombre-sala"></span></h2>
+        <button id="btn-dificultad" type="button" class="pildora-dif" data-nivel="facil"
+                title="Tocá para cambiar la dificultad">DIFICULTAD: FÁCIL</button>
+      </div>
+      <div class="acciones">
+        <button id="empezar" type="button" class="btn-flecha" disabled>
+          EMPEZAR <span class="flecha"><svg><use href="#i-flecha"/></svg></span>
+        </button>
+        <button id="btn-salir" type="button" class="btn-flecha salir">
+          SALIR DE LA SALA <span class="flecha"><svg><use href="#i-flecha"/></svg></span>
+        </button>
+      </div>
+    </header>
+
+    <ul id="perfiles">
+      <li class="perfil" data-c="0" style="--color:#e84833">
+        <button type="button" class="mic" disabled aria-label="Micrófono"><svg><use href="#i-mic"/></svg></button>
+        <div class="circulo"><small class="rotulo"></small><strong class="apodo">JUGADOR 1</strong></div>
+        <div class="cuerpo">
+          <button type="button" class="toggle" hidden><span></span></button>
+          <p class="estado-txt">ESPERANDO</p>
+        </div>
+      </li>
+      <li class="perfil" data-c="1" style="--color:#d4ff00">
+        <button type="button" class="mic" disabled aria-label="Micrófono"><svg><use href="#i-mic"/></svg></button>
+        <div class="circulo"><small class="rotulo"></small><strong class="apodo">JUGADOR 2</strong></div>
+        <div class="cuerpo">
+          <button type="button" class="toggle" hidden><span></span></button>
+          <p class="estado-txt">ESPERANDO</p>
+        </div>
+      </li>
+      <li class="perfil" data-c="2" style="--color:#6a00ff">
+        <button type="button" class="mic" disabled aria-label="Micrófono"><svg><use href="#i-mic"/></svg></button>
+        <div class="circulo"><small class="rotulo"></small><strong class="apodo">JUGADOR 3</strong></div>
+        <div class="cuerpo">
+          <button type="button" class="toggle" hidden><span></span></button>
+          <p class="estado-txt">ESPERANDO</p>
+        </div>
+      </li>
+      <li class="perfil" data-c="3" style="--color:#ff3a9f">
+        <button type="button" class="mic" disabled aria-label="Micrófono"><svg><use href="#i-mic"/></svg></button>
+        <div class="circulo"><small class="rotulo"></small><strong class="apodo">JUGADOR 4</strong></div>
+        <div class="cuerpo">
+          <button type="button" class="toggle" hidden><span></span></button>
+          <p class="estado-txt">ESPERANDO</p>
+        </div>
+      </li>
+    </ul>
+    <p id="aviso-espera" role="status"></p>
+  </section>
+
+  <!-- La carrera (lienzo de p5) -->
+  <section id="juego" hidden>
+    <div id="lienzo"></div>
+    <p class="leyenda">Llegá primero a la meta. Si chocás, volvés al último
+      checkpoint. La estrella blanca del final es un nitro: solo para quien la agarre primero.</p>
+  </section>
+
+  <!-- 4. Tabla de posiciones -->
+  <section id="final" class="pantalla" hidden>
+    <h2>TABLA DE POSICIONES</h2>
+    <div class="cols" aria-hidden="true"><span class="t">Tiempo</span><span class="ch">Choques</span></div>
+    <ol id="final-ranking"></ol>
+    <button id="jugar-otra" type="button" class="btn-flecha chico">
+      VOLVER A LA SALA <span class="flecha"><svg><use href="#i-flecha"/></svg></span>
+    </button>
+  </section>
+
+  <!-- 3. Pop-up de configuración del micrófono -->
+  <div id="pop-mic" class="velo" hidden>
+    <div class="pop" role="dialog" aria-modal="true" aria-labelledby="pop-titulo">
+      <h2 id="pop-titulo" class="sr-only">Configuración del micrófono</h2>
+      <span class="pop-icono" aria-hidden="true"><svg><use href="#i-mic"/></svg></span>
+      <button id="cerrar-mic" type="button" class="cerrar" aria-label="Cerrar"><svg><use href="#i-cerrar"/></svg></button>
+      <div class="pop-botones">
+        <button id="btn-mic" type="button">ACTIVAR MICRÓFONO</button>
+        <button id="btn-calibrar" type="button">CALIBRAR MICRÓFONO</button>
+      </div>
+      <p class="pop-texto"><span id="estado-mic" role="status"></span><span id="cuenta-cal" aria-hidden="true"></span></p>
+      <progress id="medidor-volumen" max="100" value="0" aria-label="Volumen"></progress>
+      <progress id="medidor" max="100" value="0" aria-label="Altura: grave a la izquierda, aguda a la derecha"></progress>
+      <p class="pop-nota">Sin micrófono también se puede probar con las flechas ↑ ↓.</p>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="nivel.js"></script>
+  <!-- p5 como en la clase (archivos locales); si faltan, se usan los de internet -->
+  <script src="p5.min.js"></script>
+  <script>window.p5 || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"><\/script>');</script>
+  <script src="p5.sound.min.js"></script>
+  <script>(window.p5 && p5.AudioIn) || document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"><\/script>');</script>
+  <script src="sonido.js"></script>
+  <script src="juego.js"></script>
+</body>
+</html>
